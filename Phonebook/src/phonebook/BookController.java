@@ -355,6 +355,7 @@ public class BookController {
 		if (okClicked) {
 			personData.clear();
 			loadDB();
+			
 		}	
 	}
 	private void handleNewDB() throws ClassNotFoundException, SQLException {
@@ -430,7 +431,8 @@ public class BookController {
 				try {
 					PreparedStatement preparedStatement = dbConnection.prepareStatement(selectQeury);
 					resultSet = preparedStatement.executeQuery();
-					personData = FXCollections.observableArrayList(dataBaseArrayList(resultSet));
+					ObservableList<Person> personData_db = FXCollections.observableArrayList(dataBaseArrayList(resultSet));
+					personData.addAll(personData_db);
 					System.out.println("Connect OK.");
 					statement.close();
 					}

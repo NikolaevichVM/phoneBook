@@ -2,6 +2,7 @@ package phonebook;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -18,15 +19,15 @@ public class AddDBController {
 	private TextField portDB;
 	@FXML
 	private TextField nameDB;
-		@FXML
+	@FXML
 	private TextField userDB;
 	@FXML
-	private TextField passwdDB;
+	private PasswordField passwdDB;
+	
 	private Stage dialogStage;
 	
 	private boolean okClicked = false;
-//	private static DBConnect dbconnect = new DBConnect();
-	
+
 	@FXML
 	private void initialize() {
 	}
