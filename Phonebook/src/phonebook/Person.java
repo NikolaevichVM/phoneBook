@@ -3,7 +3,6 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Person {
 	
-	
 	SimpleStringProperty LastName;
 	SimpleStringProperty FirstName;
 	SimpleStringProperty OldName;

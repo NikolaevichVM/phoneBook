@@ -50,7 +50,6 @@ public class BookController {
 	private MenuItem fileOpen, dbSave, fileSaveAs, newFile, exitApp, openDB, newDB, saveDB;
 	private PhoneBook phoneBook;
 	
-	
 	private ObservableList<Person> personData = FXCollections.observableArrayList();
 
 	public BookController() throws ClassNotFoundException, SQLException {

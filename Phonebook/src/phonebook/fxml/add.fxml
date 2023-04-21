@@ -4,13 +4,13 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="244.0" prefWidth="284.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="phonebook.AddController">
+<AnchorPane prefHeight="206.0" prefWidth="228.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="phonebook.AddController">
    <children>
-      <Button layoutX="61.0" layoutY="181.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="72.0" text="ОК" />
-      <TextField fx:id="lastNameInput" layoutX="61.0" layoutY="38.0" prefHeight="25.0" prefWidth="162.0" promptText="Фамилия" />
-      <TextField fx:id="firstNameInput" layoutX="61.0" layoutY="74.0" prefHeight="25.0" prefWidth="162.0" promptText="Имя" />
-      <TextField fx:id="oldNameInput" layoutX="61.0" layoutY="110.0" prefHeight="25.0" prefWidth="162.0" promptText="Отчество" />
-      <TextField fx:id="phoneInput" layoutX="61.0" layoutY="143.0" prefHeight="25.0" prefWidth="162.0" promptText="Номер телефона" />
-      <Button layoutX="151.0" layoutY="181.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="72.0" text="Отмена" />
+      <Button layoutX="33.0" layoutY="162.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="72.0" text="ОК" />
+      <TextField fx:id="lastNameInput" layoutX="33.0" layoutY="19.0" prefHeight="25.0" prefWidth="162.0" promptText="Фамилия" />
+      <TextField fx:id="firstNameInput" layoutX="33.0" layoutY="55.0" prefHeight="25.0" prefWidth="162.0" promptText="Имя" />
+      <TextField fx:id="oldNameInput" layoutX="33.0" layoutY="91.0" prefHeight="25.0" prefWidth="162.0" promptText="Отчество" />
+      <TextField fx:id="phoneInput" layoutX="33.0" layoutY="124.0" prefHeight="25.0" prefWidth="162.0" promptText="Номер телефона" />
+      <Button layoutX="123.0" layoutY="162.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="72.0" text="Отмена" />
    </children>
 </AnchorPane>

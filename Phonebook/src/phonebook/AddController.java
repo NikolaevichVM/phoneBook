@@ -18,7 +18,7 @@ public class AddController {
 	private boolean okClicked = false;
 	
 	
-	
+
 	private Stage dialogStage;
 
 	@FXML

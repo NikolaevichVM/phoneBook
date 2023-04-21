@@ -13,7 +13,6 @@ import java.io.IOException;
 public class PhoneBook extends Application {
 
 	private Stage primaryStage;
-	
 
 	public Stage getPrimaryStage() {
 		return primaryStage;

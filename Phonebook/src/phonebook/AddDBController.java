@@ -27,7 +27,6 @@ public class AddDBController {
 	private Stage dialogStage;
 	
 	private boolean okClicked = false;
-
 	@FXML
 	private void initialize() {
 	}

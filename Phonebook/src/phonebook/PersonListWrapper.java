@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "persons")
 public class PersonListWrapper {
-	
+	 
 	private List<Person> persons;
 	
 	@XmlElement(name = "person")
