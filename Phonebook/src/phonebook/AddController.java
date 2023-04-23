@@ -1,8 +1,16 @@
 package phonebook;
 
+import java.util.Base64;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class AddController {
@@ -16,6 +24,7 @@ public class AddController {
 	private TextField phoneInput;
 	private Person person;
 	private boolean okClicked = false;
+	private String encodedString;
 	
 	
 
@@ -41,7 +50,27 @@ public class AddController {
 	public boolean isOkClicked() {
 		return okClicked;
 	}
+	
+	@SuppressWarnings("unused")
+	@FXML
+	private void addPhoto() throws IOException{
+		FileChooser fileChooser = new FileChooser();
 
+		// Задаем фильтр расширений
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.jpg");
+		fileChooser.getExtensionFilters().add(extFilter);
+
+		// Показываем диалог загрузки файла
+		File file = fileChooser.showOpenDialog(dialogStage);
+		String fileInput = file.getAbsolutePath();
+		if (file != null) {
+			byte[] fileContent = FileUtils.readFileToByteArray(new File(fileInput));
+			encodedString = Base64.getEncoder().encodeToString(fileContent);
+		}
+		else{
+			encodedString = null;}
+	}
+	
 	@FXML
 	private void handleOk(){
 		if (isInputValid()) {
@@ -49,11 +78,12 @@ public class AddController {
 			person.setLastName(lastNameInput.getText());
 			person.setOldName(oldNameInput.getText());
 			person.setPhone(phoneInput.getText());
+			person.setAvatar(encodedString);
+			System.out.println(encodedString);
 			okClicked = true;
 			dialogStage.close();
 			}
 	}
-	
 
 	@FXML
 	private void handleCancel() {

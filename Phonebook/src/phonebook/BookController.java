@@ -9,11 +9,18 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -23,7 +30,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.prefs.Preferences;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
+
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Properties;
 
 import jakarta.xml.bind.JAXBContext;
@@ -45,6 +58,8 @@ public class BookController {
 	@FXML
 	public TableColumn<Person, String> phone;
 	@FXML
+	public ImageView avatar;
+	@FXML
 	private Button editButton, addButton, delButton;
 	@FXML
 	private MenuItem fileOpen, dbSave, fileSaveAs, newFile, exitApp, openDB, newDB, saveDB;
@@ -64,6 +79,7 @@ public class BookController {
 	
 	@FXML
 	public void initialize() {
+		avatar.setImage(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/default.jpg")));
 		FilteredList<Person> filteredData = new FilteredList<>(personData, p -> true);
 		filterField.textProperty().addListener((observable, oldValue, newValue) -> {
 			filteredData.setPredicate(person -> {
@@ -107,7 +123,36 @@ public class BookController {
 		personTable.setEditable(true);
 
 	}
-
+	 @FXML
+	    void setClickAvatar(MouseEvent event) throws IOException {
+		 Person selectedPerson = personTable.getSelectionModel().getSelectedItem();
+			String selectedAvatar = personTable.getSelectionModel().getSelectedItem().getAvatar();
+			if (selectedPerson != null) {
+				System.out.println(selectedAvatar);
+				if(selectedAvatar != null) {
+				String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
+				
+				byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
+				ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+				BufferedImage image = ImageIO.read(bais);
+				WritableImage wr = null;
+		        if (image != null) {
+		            wr = new WritableImage(image.getWidth(), image.getHeight());
+		            PixelWriter pw = wr.getPixelWriter();
+		            for (int x = 0; x < image.getWidth(); x++) {
+		                for (int y = 0; y < image.getHeight(); y++) {
+		                    pw.setArgb(x, y, image.getRGB(x, y));
+		                }
+		            }
+		        }
+		        avatar.setImage(wr);
+				}else {
+					avatar.setImage(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/default.jpg")));
+					}
+				}
+	 }
+	
+	 
 	public void setPhoneBook(PhoneBook phoneBook) {
 		this.phoneBook = phoneBook;
 	}
@@ -331,7 +376,8 @@ public class BookController {
             person.setFirstName(resultSet.getString("firstName"));
             person.setOldName(resultSet.getString("oldName"));
             person.setPhone(resultSet.getString("phone"));
-                        data.add(person);
+            person.setAvatar(resultSet.getString("avatar"));
+            data.add(person);
         }
         return data;
     }
@@ -398,12 +444,13 @@ public class BookController {
 				String delQuery = "DELETE FROM persons;";
 				Statement statement = dbConnection.createStatement();
 			 	statement.executeUpdate(delQuery);
-				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`) values(?,?,?,?)")) {
+				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?)")) {
                     for (Person person : personData) {
                     	preparedStatement.setString(1, person.getLastName());
                         preparedStatement.setString(2, person.getFirstName());
                         preparedStatement.setString(3, person.getOldName());
                         preparedStatement.setString(4, person.getPhone());
+                        preparedStatement.setString(5, person.getAvatar());
                         preparedStatement.addBatch();
                     }
                     preparedStatement.executeBatch();

@@ -13,6 +13,8 @@ module Phonebook {
 	requires javafx.base;
 	requires jakarta.xml.bind;
 	requires java.sql;
+	requires java.desktop;
+	requires org.apache.commons.io;
 	
 	opens phonebook to javafx.fxml, jakarta.xml.bind;
 	
