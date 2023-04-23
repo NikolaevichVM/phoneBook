@@ -1,26 +1,10 @@
 package phonebook;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.FileChooser;
-
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -29,19 +13,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
-
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Properties;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 
 public class BookController {
 
@@ -123,12 +124,12 @@ public class BookController {
 		personTable.setEditable(true);
 
 	}
+	
 	 @FXML
-	    void setClickAvatar(MouseEvent event) throws IOException {
+	   void setClickAvatar(MouseEvent event) throws IOException {
 		 Person selectedPerson = personTable.getSelectionModel().getSelectedItem();
 			String selectedAvatar = personTable.getSelectionModel().getSelectedItem().getAvatar();
 			if (selectedPerson != null) {
-				System.out.println(selectedAvatar);
 				if(selectedAvatar != null) {
 				String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
 				
@@ -418,7 +419,7 @@ public class BookController {
 				try (Connection dbConnection = DriverManager.getConnection(url, username, password);){
 					String createBaseQeury ="CREATE DATABASE IF NOT EXISTS "+props.getProperty("nameDatabase");
 					String useQuery ="USE "+props.getProperty("nameDatabase");
-					String createQuery = "create table `persons` (lastName VARCHAR(25),firstName VARCHAR(25),oldName VARCHAR(25),phone VARCHAR(25),PRIMARY KEY(phone));";
+					String createQuery = "create table `persons` (lastName VARCHAR(25),firstName VARCHAR(25),oldName VARCHAR(25),phone VARCHAR(25),PRIMARY KEY(phone),avatar TEXT());";
 					Statement statement = dbConnection.createStatement();
 					statement.executeUpdate(createBaseQeury);
 					statement.executeUpdate(useQuery);
@@ -444,7 +445,7 @@ public class BookController {
 				String delQuery = "DELETE FROM persons;";
 				Statement statement = dbConnection.createStatement();
 			 	statement.executeUpdate(delQuery);
-				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?)")) {
+				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
                     for (Person person : personData) {
                     	preparedStatement.setString(1, person.getLastName());
                         preparedStatement.setString(2, person.getFirstName());
@@ -498,11 +499,12 @@ public class BookController {
 		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 			try (Connection dbConnection = getConnection()){
 				Statement statement = dbConnection.createStatement();
-			 	try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`) values(?,?,?,?)")) {
+			 	try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
                        	preparedStatement.setString(1, tempPerson.getLastName());
                         preparedStatement.setString(2, tempPerson.getFirstName());
                         preparedStatement.setString(3, tempPerson.getOldName());
                         preparedStatement.setString(4, tempPerson.getPhone());
+                        preparedStatement.setString(5, tempPerson.getAvatar());
                         preparedStatement.addBatch();
                         preparedStatement.executeBatch();
                 }

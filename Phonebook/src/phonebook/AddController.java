@@ -22,9 +22,13 @@ public class AddController {
 	private TextField oldNameInput;
 	@FXML
 	private TextField phoneInput;
+	
+	private String avatarInput;
+	
 	private Person person;
+	
 	private boolean okClicked = false;
-	private String encodedString;
+	
 	
 	
 
@@ -45,6 +49,7 @@ public class AddController {
 		firstNameInput.setText(person.getFirstName());
 		oldNameInput.setText(person.getOldName());
 		phoneInput.setText(person.getPhone());
+		avatarInput = person.getAvatar();
 	}
 
 	public boolean isOkClicked() {
@@ -60,15 +65,13 @@ public class AddController {
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.jpg");
 		fileChooser.getExtensionFilters().add(extFilter);
 
-		// Показываем диалог загрузки файла
+		// Показываем диалог загрузки файла и перекодируем изображение в формат Base64
 		File file = fileChooser.showOpenDialog(dialogStage);
 		String fileInput = file.getAbsolutePath();
 		if (file != null) {
 			byte[] fileContent = FileUtils.readFileToByteArray(new File(fileInput));
-			encodedString = Base64.getEncoder().encodeToString(fileContent);
+			avatarInput = Base64.getEncoder().encodeToString(fileContent);
 		}
-		else{
-			encodedString = null;}
 	}
 	
 	@FXML
@@ -78,8 +81,7 @@ public class AddController {
 			person.setLastName(lastNameInput.getText());
 			person.setOldName(oldNameInput.getText());
 			person.setPhone(phoneInput.getText());
-			person.setAvatar(encodedString);
-			System.out.println(encodedString);
+			person.setAvatar(avatarInput);
 			okClicked = true;
 			dialogStage.close();
 			}
