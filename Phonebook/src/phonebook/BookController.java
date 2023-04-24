@@ -450,7 +450,7 @@ public class BookController {
 				try (Connection dbConnection = DriverManager.getConnection(url, username, password);){
 					String createBaseQeury ="CREATE DATABASE IF NOT EXISTS "+props.getProperty("nameDatabase");
 					String useQuery ="USE "+props.getProperty("nameDatabase");
-					String createQuery = "create table `persons` (indexId int, lastName VARCHAR(25),firstName VARCHAR(25),oldName VARCHAR(25),phone VARCHAR(25),PRIMARY KEY(indexId),avatar TEXT() NULL);";
+					String createQuery = "create table `persons` (indexId int NOT NULL AUTO_INCREMENT FIRST , lastName VARCHAR(25),firstName VARCHAR(25),oldName VARCHAR(25),phone VARCHAR(25),PRIMARY KEY(indexId),avatar longtext() NULL);";
 					Statement statement = dbConnection.createStatement();
 					statement.executeUpdate(createBaseQeury);
 					statement.executeUpdate(useQuery);
@@ -474,8 +474,12 @@ public class BookController {
 		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 			try (Connection dbConnection = getConnection()){
 				String delQuery = "DELETE FROM persons;";
+				String dropIndexId = "ALTER TABLE persons DROP indexId";
+				String newIndexId = "ALTER TABLE persons ADD indexId INT NOT NULL AUTO_INCREMENT FIRST ,ADD PRIMARY KEY (indexId)";
 				Statement statement = dbConnection.createStatement();
 			 	statement.executeUpdate(delQuery);
+			 	statement.executeUpdate(dropIndexId);
+				statement.executeUpdate(newIndexId);
 				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
                     for (Person person : personData) {
                     	preparedStatement.setString(1, person.getLastName());
@@ -587,9 +591,14 @@ public class BookController {
 		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 			try (Connection dbConnection = getConnection()){
 				String deleteQeury = "DELETE FROM persons WHERE `persons`.`indexId` ="+selectedPerson.getIndexId();
+				String dropIndexId = "ALTER TABLE persons DROP indexId";
+				String newIndexId = "ALTER TABLE persons ADD indexId INT NOT NULL AUTO_INCREMENT FIRST ,ADD PRIMARY KEY (indexId)";
+				
 				try {
 					Statement statement = dbConnection.createStatement();
 					statement.executeUpdate(deleteQeury);
+					statement.executeUpdate(dropIndexId);
+					statement.executeUpdate(newIndexId);
 					statement.close();
 					}
 				catch (SQLException e) {
