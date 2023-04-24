@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -14,6 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class AddController {
+	private int indexIdInput;
 	@FXML
 	private TextField lastNameInput;
 	@FXML
@@ -26,6 +28,8 @@ public class AddController {
 	private String avatarInput;
 	
 	private Person person;
+	
+	BookController bookController;
 	
 	private boolean okClicked = false;
 	
@@ -44,7 +48,7 @@ public class AddController {
 
 	public void setPerson(Person person) {
 		this.person = person;
-
+		indexIdInput = person.getIndexId();
 		lastNameInput.setText(person.getLastName());
 		firstNameInput.setText(person.getFirstName());
 		oldNameInput.setText(person.getOldName());
@@ -75,8 +79,9 @@ public class AddController {
 	}
 	
 	@FXML
-	private void handleOk(){
+	private void handleOk() throws ClassNotFoundException, SQLException{
 		if (isInputValid()) {
+			person.setIndexId(indexIdInput);
 			person.setFirstName(firstNameInput.getText());
 			person.setLastName(lastNameInput.getText());
 			person.setOldName(oldNameInput.getText());
@@ -91,9 +96,12 @@ public class AddController {
 	private void handleCancel() {
 		dialogStage.close();
 	}
-
-	private boolean isInputValid() {
+	
+	private boolean isInputValid() throws ClassNotFoundException, SQLException {
 		String errorMessage = "";
+		BookController inPhone = new BookController();
+		boolean inPhoneext = inPhone.isInputPhone(phoneInput.getText(),person.getIndexId());
+		System.out.println(inPhoneext);
 		if (lastNameInput.getText() == null || lastNameInput.getText().length() == 0) {
 			errorMessage += "Поле <Фамилия> не заполнено!\n";
 		}
@@ -108,6 +116,10 @@ public class AddController {
 		if (phoneInput.getText() == null || phoneInput.getText().length() == 0) {
 			errorMessage += "Поле <Номер> не заполнено!\n";
 		}
+		if (phoneInput.getText() == null || phoneInput.getText().length() == 0 || inPhoneext) {
+			errorMessage += "Такой номер уже существует!\n";
+		}
+//		
 		if (errorMessage.length() == 0) {
 			return true;
 		} else {
@@ -123,4 +135,5 @@ public class AddController {
 			return false;
 		}
 	}
+	
 }

@@ -2,7 +2,7 @@ package phonebook;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Person {
-	
+	int indexId;
 	SimpleStringProperty LastName;
 	SimpleStringProperty FirstName;
 	SimpleStringProperty OldName;
@@ -10,10 +10,11 @@ public class Person {
 	SimpleStringProperty Avatar;
 
 	public Person() {
-		this( null, null, null, null, null);
+		this( 0, null, null, null, null, null);
 	}
 
-	public Person( String lastName, String firstName, String oldName, String phone, String avatar) {
+	public Person( int indexId, String lastName, String firstName, String oldName, String phone, String avatar) {
+		this.indexId = indexId;
 		LastName = new SimpleStringProperty(lastName);
 		FirstName = new SimpleStringProperty(firstName);
 		OldName = new SimpleStringProperty(oldName);
@@ -35,6 +36,14 @@ public class Person {
 	public String getAvatar() {
 		return Avatar.get();
 	}
+	public int getIndexId() {
+		return indexId;
+	}
+
+	public void setIndexId(int indexId) {
+		this.indexId = indexId;
+	}
+
 	public void setLastName(String lastName) {
 		this.LastName.set(lastName);
 	}

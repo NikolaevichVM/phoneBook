@@ -88,14 +88,13 @@ public class BookController {
 				if (newValue == null || newValue.isEmpty()) {
 					return true;
 				}
-
 				// Compare first name and last name of every person with filter text.
 				String lowerCaseFilter = newValue.toLowerCase();
 
 				if (person.getLastName().toLowerCase().contains(lowerCaseFilter)) {
 					return true; // Filter matches first name.
 				} else if (person.getPhone().toLowerCase().contains(lowerCaseFilter)) {
-					return true; // Filter matches last name.
+					return true; // Filter matches phone.
 				}
 				return false; // Does not match.
 			});
@@ -121,7 +120,7 @@ public class BookController {
 
 		phone.setCellFactory(TextFieldTableCell.forTableColumn());
 		phone.setOnEditCommit(e->e.getTableView().getItems().get(e.getTablePosition().getRow()).setPhone(e.getNewValue()));
-		personTable.setEditable(true);
+		personTable.setEditable(false);
 
 	}
 	
@@ -210,18 +209,27 @@ public class BookController {
 	private void handleExit() {
 		System.exit(0);
 	}
-	private void handleNewPerson() throws ClassNotFoundException, SQLException {
+	private void handleNewPerson() throws ClassNotFoundException, SQLException, IOException {
 		Person tempPerson = new Person();
+		int tempIndex = personData.size()+1;
+		System.out.println(tempIndex);
+		tempPerson.setIndexId(tempIndex);
 		boolean okClicked = phoneBook.addDialog(tempPerson);
 		File personFile = getPersonFilePath();
 		
 		if (okClicked) {
 			if(personFile != null) {
 			personData.add(tempPerson);
+			String encodedString = tempPerson.getAvatar();
+			WritableImage writableImage = encodedString(encodedString);
+	        avatar.setImage(writableImage);
 			}
 			else {
 				addPersonDB(tempPerson);
 				personData.add(tempPerson);
+				String encodedString = tempPerson.getAvatar();
+				WritableImage writableImage = encodedString(encodedString);
+		        avatar.setImage(writableImage);
 			}
 		}
 			
@@ -379,6 +387,7 @@ public class BookController {
         ArrayList<Person> data =  new ArrayList<>();
         while (resultSet.next()) {
             Person person = new Person();
+            person.setIndexId(resultSet.getInt("indexId"));
             person.setLastName(resultSet.getString("lastName"));
             person.setFirstName(resultSet.getString("firstName"));
             person.setOldName(resultSet.getString("oldName"));
@@ -425,7 +434,7 @@ public class BookController {
 				try (Connection dbConnection = DriverManager.getConnection(url, username, password);){
 					String createBaseQeury ="CREATE DATABASE IF NOT EXISTS "+props.getProperty("nameDatabase");
 					String useQuery ="USE "+props.getProperty("nameDatabase");
-					String createQuery = "create table `persons` (lastName VARCHAR(25),firstName VARCHAR(25),oldName VARCHAR(25),phone VARCHAR(25),PRIMARY KEY(phone),avatar TEXT());";
+					String createQuery = "create table `persons` (indexId int, lastName VARCHAR(25),firstName VARCHAR(25),oldName VARCHAR(25),phone VARCHAR(25),PRIMARY KEY(indexId),avatar TEXT() NULL);";
 					Statement statement = dbConnection.createStatement();
 					statement.executeUpdate(createBaseQeury);
 					statement.executeUpdate(useQuery);
@@ -451,13 +460,14 @@ public class BookController {
 				String delQuery = "DELETE FROM persons;";
 				Statement statement = dbConnection.createStatement();
 			 	statement.executeUpdate(delQuery);
-				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
+				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`indexId`, `lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?,?)")) {
                     for (Person person : personData) {
-                    	preparedStatement.setString(1, person.getLastName());
-                        preparedStatement.setString(2, person.getFirstName());
-                        preparedStatement.setString(3, person.getOldName());
-                        preparedStatement.setString(4, person.getPhone());
-                        preparedStatement.setString(5, person.getAvatar());
+                    	preparedStatement.setInt(1, person.getIndexId());
+                    	preparedStatement.setString(2, person.getLastName());
+                        preparedStatement.setString(3, person.getFirstName());
+                        preparedStatement.setString(4, person.getOldName());
+                        preparedStatement.setString(5, person.getPhone());
+                        preparedStatement.setString(6, person.getAvatar());
                         preparedStatement.addBatch();
                     }
                     preparedStatement.executeBatch();
@@ -505,12 +515,13 @@ public class BookController {
 		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 			try (Connection dbConnection = getConnection()){
 				Statement statement = dbConnection.createStatement();
-			 	try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
-                       	preparedStatement.setString(1, tempPerson.getLastName());
-                        preparedStatement.setString(2, tempPerson.getFirstName());
-                        preparedStatement.setString(3, tempPerson.getOldName());
-                        preparedStatement.setString(4, tempPerson.getPhone());
-                        preparedStatement.setString(5, tempPerson.getAvatar());
+			 	try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`indexId`, `lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?,?)")) {
+				 		preparedStatement.setInt(1, tempPerson.getIndexId());
+				 		preparedStatement.setString(2, tempPerson.getLastName());
+                        preparedStatement.setString(3, tempPerson.getFirstName());
+                        preparedStatement.setString(4, tempPerson.getOldName());
+                        preparedStatement.setString(5, tempPerson.getPhone());
+                        preparedStatement.setString(6, tempPerson.getAvatar());
                         preparedStatement.addBatch();
                         preparedStatement.executeBatch();
                 }
@@ -536,7 +547,16 @@ public class BookController {
 		this.personData = personData;
 	}
 	
-	
-
+	public boolean isInputPhone(String phoneIn, int indexIn) {
+		boolean inPhone = false;
+		for (Person person : personData) {
+			if (phoneIn.equalsIgnoreCase(person.getPhone()) && indexIn != person.getIndexId()) {
+				System.out.println(phoneIn+" "+person.getPhone()+" "+indexIn+" "+person.getIndexId());
+				inPhone = true;
+				break;
+				}	
+			}
+		return inPhone;
+	}
 	
 }
