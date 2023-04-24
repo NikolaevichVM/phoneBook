@@ -131,35 +131,38 @@ public class BookController {
 			String selectedAvatar = personTable.getSelectionModel().getSelectedItem().getAvatar();
 			if (selectedPerson != null) {
 				if(selectedAvatar != null) {
-				String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
-				
-				byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
-				ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
-				BufferedImage image = ImageIO.read(bais);
-				WritableImage wr = null;
-		        if (image != null) {
-		            wr = new WritableImage(image.getWidth(), image.getHeight());
-		            PixelWriter pw = wr.getPixelWriter();
-		            for (int x = 0; x < image.getWidth(); x++) {
-		                for (int y = 0; y < image.getHeight(); y++) {
-		                    pw.setArgb(x, y, image.getRGB(x, y));
-		                }
-		            }
-		        }
-		        avatar.setImage(wr);
-				}else {
+					String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
+					WritableImage writableImage = encodedString(encodedString);
+			        avatar.setImage(writableImage);
+					}else {
 					avatar.setImage(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/default.jpg")));
 					}
-				}
+			}
 	 }
 	
+	public WritableImage encodedString (String encodedString) throws IOException{
+		byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
+		ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+		BufferedImage image = ImageIO.read(bais);
+		WritableImage writableImage = null;
+        if (image != null) {
+        	writableImage = new WritableImage(image.getWidth(), image.getHeight());
+            PixelWriter pw = writableImage.getPixelWriter();
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    pw.setArgb(x, y, image.getRGB(x, y));
+                }
+            }
+        }
+        return writableImage;
+	}
 	 
 	public void setPhoneBook(PhoneBook phoneBook) {
 		this.phoneBook = phoneBook;
 	}
 
 	@FXML
-	void handleButtonClick(ActionEvent event) throws ClassNotFoundException, SQLException {
+	void handleButtonClick(ActionEvent event) throws ClassNotFoundException, SQLException, IOException {
 		if (event.getSource() == editButton) {
 			handleEditPerson();
 		}
@@ -223,13 +226,16 @@ public class BookController {
 		}
 			
 	}
-	private void handleEditPerson() {
+	private void handleEditPerson() throws IOException {
 		Person selectedPerson = personTable.getSelectionModel().getSelectedItem();
 		int selectedIndex = personTable.getSelectionModel().getSelectedIndex();
 		if (selectedPerson != null) {
 			boolean okClicked = phoneBook.addDialog(selectedPerson);
 			if (okClicked) {
 				personData.set(selectedIndex, selectedPerson);
+				String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
+				WritableImage writableImage = encodedString(encodedString);
+		        avatar.setImage(writableImage);
 			}
 
 		} else {
