@@ -81,7 +81,6 @@ public class AddController {
 	@FXML
 	private void handleOk() throws ClassNotFoundException, SQLException{
 		if (isInputValid()) {
-			person.setIndexId(indexIdInput);
 			person.setFirstName(firstNameInput.getText());
 			person.setLastName(lastNameInput.getText());
 			person.setOldName(oldNameInput.getText());
@@ -100,7 +99,7 @@ public class AddController {
 	private boolean isInputValid() throws ClassNotFoundException, SQLException {
 		String errorMessage = "";
 		BookController inPhone = new BookController();
-		boolean inPhoneext = inPhone.isInputPhone(phoneInput.getText(),person.getIndexId());
+		boolean inPhoneext = inPhone.isInputPhone(phoneInput.getText(),indexIdInput);
 		System.out.println(inPhoneext);
 		if (lastNameInput.getText() == null || lastNameInput.getText().length() == 0) {
 			errorMessage += "Поле <Фамилия> не заполнено!\n";

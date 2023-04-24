@@ -67,6 +67,8 @@ public class BookController {
 	private PhoneBook phoneBook;
 	
 	private ObservableList<Person> personData = FXCollections.observableArrayList();
+	
+	private File personFile = getPersonFilePath();
 
 	public BookController() throws ClassNotFoundException, SQLException {
 		File file = getPersonFilePath();
@@ -205,20 +207,31 @@ public class BookController {
 		personData.clear();
 		
 	}
-
+	//Метод для удаления выбранной записи
+	private void handleDeletePerson() throws ClassNotFoundException, SQLException {
+		Person selectedPerson = personTable.getSelectionModel().getSelectedItem();
+		int selectedIndex = personTable.getSelectionModel().getSelectedIndex();
+		if (selectedIndex >= 0) {
+			if (personFile != null) {
+				personData.remove(selectedIndex);
+				avatar.setImage(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/default.jpg")));
+			}
+			else {
+				deletePersonDB(selectedPerson);
+				personData.remove(selectedIndex);
+				avatar.setImage(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/default.jpg")));
+			}
+		}
+	}
+	
 	private void handleExit() {
 		System.exit(0);
 	}
 	private void handleNewPerson() throws ClassNotFoundException, SQLException, IOException {
 		Person tempPerson = new Person();
-		int tempIndex = personData.size()+1;
-		System.out.println(tempIndex);
-		tempPerson.setIndexId(tempIndex);
 		boolean okClicked = phoneBook.addDialog(tempPerson);
-		File personFile = getPersonFilePath();
-		
 		if (okClicked) {
-			if(personFile != null) {
+			if (personFile != null) {
 			personData.add(tempPerson);
 			String encodedString = tempPerson.getAvatar();
 			WritableImage writableImage = encodedString(encodedString);
@@ -234,19 +247,28 @@ public class BookController {
 		}
 			
 	}
-	private void handleEditPerson() throws IOException {
+	private void handleEditPerson() throws IOException, ClassNotFoundException, SQLException {
 		Person selectedPerson = personTable.getSelectionModel().getSelectedItem();
 		int selectedIndex = personTable.getSelectionModel().getSelectedIndex();
 		if (selectedPerson != null) {
-			boolean okClicked = phoneBook.addDialog(selectedPerson);
-			if (okClicked) {
-				personData.set(selectedIndex, selectedPerson);
-				String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
-				WritableImage writableImage = encodedString(encodedString);
-		        avatar.setImage(writableImage);
-			}
-
-		} else {
+				boolean okClicked = phoneBook.addDialog(selectedPerson);
+				if (okClicked) {
+					if (personFile != null) {
+						personData.set(selectedIndex, selectedPerson);
+						String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
+						WritableImage writableImage = encodedString(encodedString);
+				        avatar.setImage(writableImage);
+						}
+					else {
+						personData.set(selectedIndex, selectedPerson);
+						editPersonDB(selectedPerson);
+						String encodedString = personTable.getSelectionModel().getSelectedItem().getAvatar();
+						WritableImage writableImage = encodedString(encodedString);
+				        avatar.setImage(writableImage);
+					}
+				}	
+			} 
+		else {
 			// Nothing selected.
 			Alert alert = new Alert(Alert.AlertType.WARNING);
 			alert.initOwner(phoneBook.getPrimaryStage());
@@ -283,13 +305,7 @@ public class BookController {
 	//Метод для создание новой записи
 	
 
-	//Метод для удаления выбранной записи
-	private void handleDeletePerson() {
-		int selectedIndex = personTable.getSelectionModel().getSelectedIndex();
-		if (selectedIndex >= 0) {
-			personData.remove(selectedIndex);
-		}
-	}
+
 
 	public File getPersonFilePath() {
 		Preferences prefs = Preferences.userNodeForPackage(BookController.class);
@@ -460,14 +476,13 @@ public class BookController {
 				String delQuery = "DELETE FROM persons;";
 				Statement statement = dbConnection.createStatement();
 			 	statement.executeUpdate(delQuery);
-				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`indexId`, `lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?,?)")) {
+				try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
                     for (Person person : personData) {
-                    	preparedStatement.setInt(1, person.getIndexId());
-                    	preparedStatement.setString(2, person.getLastName());
-                        preparedStatement.setString(3, person.getFirstName());
-                        preparedStatement.setString(4, person.getOldName());
-                        preparedStatement.setString(5, person.getPhone());
-                        preparedStatement.setString(6, person.getAvatar());
+                    	preparedStatement.setString(1, person.getLastName());
+                        preparedStatement.setString(2, person.getFirstName());
+                        preparedStatement.setString(3, person.getOldName());
+                        preparedStatement.setString(4, person.getPhone());
+                        preparedStatement.setString(5, person.getAvatar());
                         preparedStatement.addBatch();
                     }
                     preparedStatement.executeBatch();
@@ -515,13 +530,12 @@ public class BookController {
 		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 			try (Connection dbConnection = getConnection()){
 				Statement statement = dbConnection.createStatement();
-			 	try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`indexId`, `lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?,?)")) {
-				 		preparedStatement.setInt(1, tempPerson.getIndexId());
-				 		preparedStatement.setString(2, tempPerson.getLastName());
-                        preparedStatement.setString(3, tempPerson.getFirstName());
-                        preparedStatement.setString(4, tempPerson.getOldName());
-                        preparedStatement.setString(5, tempPerson.getPhone());
-                        preparedStatement.setString(6, tempPerson.getAvatar());
+			 	try (PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO `persons` (`lastName`, `firstName`, `oldName`, `phone`, `avatar`) values(?,?,?,?,?)")) {
+				 		preparedStatement.setString(1, tempPerson.getLastName());
+                        preparedStatement.setString(2, tempPerson.getFirstName());
+                        preparedStatement.setString(3, tempPerson.getOldName());
+                        preparedStatement.setString(4, tempPerson.getPhone());
+                        preparedStatement.setString(5, tempPerson.getAvatar());
                         preparedStatement.addBatch();
                         preparedStatement.executeBatch();
                 }
@@ -539,6 +553,56 @@ public class BookController {
 			}
        
 	}
+	
+	private void editPersonDB(Person selectedPerson) throws ClassNotFoundException, SQLException {
+		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+			try (Connection dbConnection = getConnection()){
+				Statement statement = dbConnection.createStatement();
+				String query = "UPDATE `persons` SET `lastName` = (?), `firstName` = (?), `oldName` = (?), `phone` = (?), `avatar` = (?) WHERE `persons`.`indexId` = "+selectedPerson.getIndexId();
+				try (PreparedStatement preparedStatement = dbConnection.prepareStatement(query)) {
+				 		preparedStatement.setString(1, selectedPerson.getLastName());
+                        preparedStatement.setString(2, selectedPerson.getFirstName());
+                        preparedStatement.setString(3, selectedPerson.getOldName());
+                        preparedStatement.setString(4, selectedPerson.getPhone());
+                        preparedStatement.setString(5, selectedPerson.getAvatar());
+                        preparedStatement.addBatch();
+                        preparedStatement.executeBatch();
+                }
+			 	
+				statement.close();
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			catch(Exception ex){
+				System.out.println("Connection failed...");
+             
+				System.out.println(ex);
+			}
+       
+	}
+	
+	private void deletePersonDB(Person selectedPerson) throws ClassNotFoundException, SQLException {
+		try {Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+			try (Connection dbConnection = getConnection()){
+				String deleteQeury = "DELETE FROM persons WHERE `persons`.`indexId` ="+selectedPerson.getIndexId();
+				try {
+					Statement statement = dbConnection.createStatement();
+					statement.executeUpdate(deleteQeury);
+					statement.close();
+					}
+				catch (SQLException e) {
+					e.printStackTrace();
+					}
+				}	
+			}
+			catch(Exception ex){
+			System.out.println("Connection failed...");
+            System.out.println(ex);
+			}
+	}
+	
 	public ObservableList<Person> getPersonData() {
 		return personData;
 	}
