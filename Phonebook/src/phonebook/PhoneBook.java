@@ -47,6 +47,7 @@ public class PhoneBook extends Application {
 			Scene scene = new Scene(rootLayout);
 			primaryStage.getIcons().add(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/address_blue_book_icon_32.png")));
 			primaryStage.setScene(scene);
+			primaryStage.setResizable(false);
 			primaryStage.show();
 			BookController controller = fxmlLoader.getController();
 			controller.setPhoneBook(this);
@@ -68,7 +69,7 @@ public class PhoneBook extends Application {
 			dialogStage.setTitle("Добавление записи");
 			dialogStage.getIcons().add(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/address_blue_book_icon_32.png")));
 			dialogStage.setScene(scene);
-
+			dialogStage.setResizable(false);
 			// Set the person into the controller.
 			AddController controller = fxmlLoader.getController();
 			controller.setDialogStage(dialogStage);
@@ -90,6 +91,7 @@ public class PhoneBook extends Application {
 			dialogStage.setTitle("Подключение к БД");
 			dialogStage.getIcons().add(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/address_blue_book_icon_32.png")));
 			dialogStage.setScene(scene);
+			dialogStage.setResizable(false);
 
 			AddDBController controller = fxmlLoader.getController();
 			controller.setDialogStage(dialogStage);
