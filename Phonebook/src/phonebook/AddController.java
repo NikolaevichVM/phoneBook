@@ -79,7 +79,7 @@ public class AddController {
 	}
 	
 	@FXML
-	private void handleOk() throws ClassNotFoundException, SQLException{
+	private void handleOk() throws ClassNotFoundException, SQLException, IOException{
 		if (isInputValid()) {
 			person.setFirstName(firstNameInput.getText());
 			person.setLastName(lastNameInput.getText());
@@ -96,7 +96,7 @@ public class AddController {
 		dialogStage.close();
 	}
 	
-	private boolean isInputValid() throws ClassNotFoundException, SQLException {
+	private boolean isInputValid() throws ClassNotFoundException, SQLException, IOException {
 		String errorMessage = "";
 		BookController inPhone = new BookController();
 		boolean inPhoneext = inPhone.isInputPhone(phoneInput.getText(),indexIdInput);

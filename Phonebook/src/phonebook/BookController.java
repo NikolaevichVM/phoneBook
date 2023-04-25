@@ -70,11 +70,10 @@ public class BookController {
 	
 	private File personFile = getPersonFilePath();
 
-	public BookController() throws ClassNotFoundException, SQLException {
-		File file = getPersonFilePath();
-		if (file != null) {
-	        loadPersonDataFromFile(file);
-	       }
+	public BookController() throws ClassNotFoundException, SQLException, IOException {
+		if (personFile != null) {
+	        loadPersonDataFromFile(personFile);
+	        }
 	    else {
 	    	loadDB();
 	    	}
@@ -161,7 +160,16 @@ public class BookController {
 	public void setPhoneBook(PhoneBook phoneBook) {
 		this.phoneBook = phoneBook;
 	}
-
+	public void setTitlePhoneBook() throws SQLException, IOException {
+		if (personFile != null) {
+			String title =personFile.getName();
+			phoneBook.setAddTitle("Телефонный справочник открыт из "+title);
+			}
+	    else {
+	    	String title = getConnection().getCatalog().intern();
+	    	phoneBook.setAddTitle("Телефонный справочник открыт из базы "+title);
+	    	}
+	}
 	@FXML
 	void handleButtonClick(ActionEvent event) throws ClassNotFoundException, SQLException, IOException {
 		if (event.getSource() == editButton) {
@@ -175,6 +183,8 @@ public class BookController {
 		}
 		if (event.getSource() == fileOpen) {
 			fileOpen();
+			setTitlePhoneBook();
+			phoneBook.initRootLayout();
 		}
 		if (event.getSource() == dbSave) {
 			fileSave();
@@ -190,7 +200,9 @@ public class BookController {
 		}
 		if (event.getSource() == openDB) {
 			setPersonFilePath(null);
-			handleOpenDB();			
+			handleOpenDB();
+			setTitlePhoneBook();
+			phoneBook.initRootLayout();
 		}
 		if (event.getSource() == newDB) {
 			setPersonFilePath(null);

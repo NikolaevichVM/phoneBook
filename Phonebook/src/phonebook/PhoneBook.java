@@ -9,35 +9,49 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class PhoneBook extends Application {
 
 	private Stage primaryStage;
-
+	private String addTitle;
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
+	
+	
+
+	public String getAddTitle() {
+		return addTitle;
+	}
+
+	public void setAddTitle(String addTitle) {
+		this.addTitle = addTitle;
+	}
+
+
 
 	private VBox rootLayout;
 
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws SQLException {
 		this.primaryStage = primaryStage;
 		initRootLayout();		
 	}
 
-	public void initRootLayout() {
+	public void initRootLayout() throws SQLException {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
 			fxmlLoader.setLocation(PhoneBook.class.getResource("/phonebook/fxml/Main.fxml"));
 			rootLayout = (VBox) fxmlLoader.load();
 			Scene scene = new Scene(rootLayout);
-			primaryStage.setTitle("Телефонный справочник");
 			primaryStage.getIcons().add(new Image(PhoneBook.class.getResourceAsStream("/phonebook/img/address_blue_book_icon_32.png")));
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			BookController controller = fxmlLoader.getController();
 			controller.setPhoneBook(this);
+			controller.setTitlePhoneBook();
+			primaryStage.setTitle(addTitle);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
