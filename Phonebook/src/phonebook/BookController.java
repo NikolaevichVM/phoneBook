@@ -427,11 +427,11 @@ public class BookController {
     }
 	
 	@SuppressWarnings("exports")
-	public static Connection getConnection() throws SQLException, IOException{
+	public Connection getConnection() throws SQLException, IOException{
         
         Properties props = new Properties();
-        try(InputStream in = Files.newInputStream(Paths.get("src/database.properties"))){
-            props.load(in);
+        try(InputStream in = Files.newInputStream(Paths.get("src/database.properties"))){	
+        	 props.load(in);
         }
         String url = "jdbc:mysql://"+props.getProperty("host")+":"+props.getProperty("port")+"/"+props.getProperty("nameDatabase")+"?enabledTLSProtocols=TLSv1.2";
         String username = props.getProperty("username");

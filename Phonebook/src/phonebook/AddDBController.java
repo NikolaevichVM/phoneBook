@@ -43,7 +43,7 @@ public class AddDBController {
 			properties.setProperty("username", userDB.getText());
 			properties.setProperty("password", passwdDB.getText());
 			OutputStream out = Files.newOutputStream(Paths.get("src/database.properties"));
-	        properties.store(out, null);
+			properties.store(out, null);
 	        
 	        okClicked = true;		
 			dialogStage.close();

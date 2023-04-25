@@ -34,9 +34,14 @@ public class PhoneBook extends Application {
 	private VBox rootLayout;
 
 	@Override
-	public void start(Stage primaryStage) throws SQLException {
+	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		initRootLayout();		
+		try {
+			initRootLayout();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}		
 	}
 
 	public void initRootLayout() throws SQLException {
