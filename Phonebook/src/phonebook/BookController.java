@@ -3,6 +3,7 @@ package phonebook;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -430,7 +431,8 @@ public class BookController {
 	public Connection getConnection() throws SQLException, IOException{
         
         Properties props = new Properties();
-        try(InputStream in = Files.newInputStream(Paths.get("src/database.properties"))){	
+        File currentDirectory = new File(new File("database.properties").getAbsolutePath());
+        try(InputStream in = new FileInputStream(currentDirectory);){	
         	 props.load(in);
         }
         String url = "jdbc:mysql://"+props.getProperty("host")+":"+props.getProperty("port")+"/"+props.getProperty("nameDatabase")+"?enabledTLSProtocols=TLSv1.2";
@@ -527,7 +529,6 @@ public class BookController {
 					resultSet = preparedStatement.executeQuery();
 					ObservableList<Person> personData_db = FXCollections.observableArrayList(dataBaseArrayList(resultSet));
 					personData.addAll(personData_db);
-					System.out.println("Connect OK.");
 					statement.close();
 					}
 				catch (SQLException e) {

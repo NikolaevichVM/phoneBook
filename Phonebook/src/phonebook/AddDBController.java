@@ -6,9 +6,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
 import java.io.OutputStream;
 
@@ -42,7 +42,8 @@ public class AddDBController {
 			properties.setProperty("nameDatabase",nameDB.getText());
 			properties.setProperty("username", userDB.getText());
 			properties.setProperty("password", passwdDB.getText());
-			OutputStream out = Files.newOutputStream(Paths.get("src/database.properties"));
+			File currentDirectory = new File(new File("database.properties").getAbsolutePath());
+			OutputStream out = new FileOutputStream(currentDirectory);
 			properties.store(out, null);
 	        
 	        okClicked = true;		
