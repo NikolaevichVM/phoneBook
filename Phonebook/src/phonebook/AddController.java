@@ -60,7 +60,7 @@ public class AddController {
 		return okClicked;
 	}
 	
-	@SuppressWarnings("unused")
+	
 	@FXML
 	private void addPhoto() throws IOException{
 		FileChooser fileChooser = new FileChooser();
@@ -96,6 +96,10 @@ public class AddController {
 		dialogStage.close();
 	}
 	
+	public static boolean isInputPhone(String phone) { 
+        return phone!= null && phone.matches("[\\d]+"); 
+    }
+	
 	private boolean isInputValid() throws ClassNotFoundException, SQLException, IOException {
 		String errorMessage = "";
 		BookController inPhone = new BookController();
@@ -112,8 +116,8 @@ public class AddController {
 			errorMessage += "Поле <Отчество> не заполнено!\n";
 		}
 
-		if (phoneInput.getText() == null || phoneInput.getText().length() == 0) {
-			errorMessage += "Поле <Номер> не заполнено!\n";
+		if (phoneInput.getText() == null || phoneInput.getText().length() == 0 || !isInputPhone(phoneInput.getText())) {
+			errorMessage += "Поле <Номер> заполнено неверное!\n";
 		}
 		if (phoneInput.getText() == null || phoneInput.getText().length() == 0 || inPhoneext) {
 			errorMessage += "Такой номер уже существует!\n";
