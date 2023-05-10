@@ -104,19 +104,18 @@ public class AddController {
 		String errorMessage = "";
 		BookController inPhone = new BookController();
 		boolean inPhoneext = inPhone.isInputPhone(phoneInput.getText(),indexIdInput);
-		System.out.println(inPhoneext);
-		if (lastNameInput.getText() == null || lastNameInput.getText().length() == 0) {
-			errorMessage += "Поле <Фамилия> не заполнено!\n";
+		if (lastNameInput.getText() == null || lastNameInput.getText().length() == 0 || lastNameInput.getText().length() > 25) {
+			errorMessage += "Поле <Фамилия> заполнено неверно!\n";
 		}
-		if (firstNameInput.getText() == null || firstNameInput.getText().length() == 0) {
-			errorMessage += "Поле <Имя> не заполнено!\n";
-		}
-
-		if (oldNameInput.getText() == null || oldNameInput.getText().length() == 0) {
-			errorMessage += "Поле <Отчество> не заполнено!\n";
+		if (firstNameInput.getText() == null || firstNameInput.getText().length() == 0 || firstNameInput.getText().length() > 25) {
+			errorMessage += "Поле <Имя> заполнено неверно!\n";
 		}
 
-		if (phoneInput.getText() == null || phoneInput.getText().length() == 0 || !isInputPhone(phoneInput.getText())) {
+		if (oldNameInput.getText() == null || oldNameInput.getText().length() == 0 || oldNameInput.getText().length() > 25) {
+			errorMessage += "Поле <Отчество> заполнено неверно!\n";
+		}
+
+		if (phoneInput.getText() == null || phoneInput.getText().length() == 0 || phoneInput.getText().length() > 25 || !isInputPhone(phoneInput.getText())) {
 			errorMessage += "Поле <Номер> заполнено неверное!\n";
 		}
 		if (phoneInput.getText() == null || phoneInput.getText().length() == 0 || inPhoneext) {
